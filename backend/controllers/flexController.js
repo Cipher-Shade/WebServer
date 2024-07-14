@@ -1,4 +1,4 @@
-import FlexSensor from '../models/flex.js'; 
+import FlexSensor from "../models/flex.js";
 
 export const createFlexSensor = async (req, res) => {
   try {

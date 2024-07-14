@@ -1,7 +1,7 @@
-import express from 'express';
+import express from "express";
 const router = express.Router();
-import { createFlexSensor } from '../controllers/flexController.js';
+import { createFlexSensor } from "../controllers/flexController.js";
 
-router.post('/flex', createFlexSensor);
+router.post("/flex", createFlexSensor);
 
 export default router;

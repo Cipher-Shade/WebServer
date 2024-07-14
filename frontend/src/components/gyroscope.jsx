@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from 'axios'; 
+import axios from "axios";
 
 export const Gyroscope = () => {
   const [acceleration, setAcceleration] = useState({ x: 0, y: 0, z: 0 });
@@ -8,7 +8,9 @@ export const Gyroscope = () => {
   useEffect(() => {
     const fetchLatestGyroData = async () => {
       try {
-        const { data } = await axios.get('http://192.168.100.68:4001/api/v1/gyrosensor/latest');
+        const { data } = await axios.get(
+          "http://192.168.100.68:4001/api/v1/gyrosensor/latest"
+        );
         if (data.accelerometer && data.gyroscope) {
           const roundedAccelerometer = {
             x: +data.accelerometer.x.toFixed(2),
@@ -23,15 +25,15 @@ export const Gyroscope = () => {
           setAcceleration(roundedAccelerometer);
           setRotation(roundedGyroscope);
         } else {
-          console.error('Unexpected data structure:', data);
+          console.error("Unexpected data structure:", data);
         }
       } catch (error) {
-        console.error('Error fetching latest gyroscope data:', error);
+        console.error("Error fetching latest gyroscope data:", error);
       }
     };
 
     fetchLatestGyroData();
-    const interval = setInterval(fetchLatestGyroData, 3000); 
+    const interval = setInterval(fetchLatestGyroData, 3000);
 
     return () => clearInterval(interval); // Cleanup on component unmount
   }, []);
