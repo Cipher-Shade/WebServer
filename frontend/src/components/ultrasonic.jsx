@@ -2,28 +2,47 @@ import React, { useState, useEffect } from "react";
 import Perfect from "@assets/1.png";
 import TooNear from "@assets/2.png";
 import TooFar from "@assets/3.png";
+import HandUndetectedImg from "@assets/10.png";
 
 export const Ultrasonic = () => {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const gestures = [
-    { image: Perfect, text: "Person is in perfect positon" },
-    { image: TooNear, text: "Person distance is too near" },
-    { image: TooFar, text: "Person distance is too far" },
-  ];
+  const [data, setData] = useState({ image: '', text: ''});
 
   useEffect(() => {
-    const toggleGesture = () => {
-      const randomIndex = Math.floor(Math.random() * gestures.length);
-      setCurrentIndex(randomIndex);
+    const fetchData = async () => {
+      try {
+        const response = await fetch('https://raspi-server.onrender.com/api/v1/ultrasonicsensor/latest');
+        const result = await response.json();
+
+        if (!result || result.distance === undefined || result.distance === null) {
+          setData({ image: HandUndetectedImg, text: 'No data available' });
+          return;
+        }
+
+        const distance = result.distance;
+        let newData = { image: '', text: '' };
+
+        if (distance === 0 || (distance >= 1 && distance <= 29)) {
+          newData = { image: TooNear, text: 'Person distance is too near' };
+        } else if (distance >= 30 && distance <= 50) {
+          newData = { image: Perfect, text: 'Person is in perfect position' };
+        } else if (distance >= 51 && distance <= 100) {
+          newData = { image: TooFar, text: 'Person distance is too far' };
+        }
+
+        setData(newData);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+        setData({ image: HandUndetectedImg, text: 'No data available' });
+      }
     };
 
-    const randomInterval = Math.floor(Math.random() * 5000) + 1000;
-    const timer = setTimeout(toggleGesture, randomInterval);
+    fetchData();
+    const interval = setInterval(fetchData, 500); 
 
-    return () => clearTimeout(timer);
-  }, [currentIndex, gestures.length]);
+    return () => clearInterval(interval);
+  }, []);
 
-  const { image, text } = gestures[currentIndex];
+  const { image, text } = data;
 
   return (
     <div className="min-w-full min-h-full border shadow-xl card bg-primary-variant border-primary-default">

@@ -22,7 +22,7 @@ export const FlexSensor = () => {
     };
 
     const randomInterval = Math.floor(Math.random() * 5000) + 1000;
-    const timer = setTimeout(toggleGesture, randomInterval);
+    const timer = setTimeout(toggleGesture, 800);
 
     return () => clearTimeout(timer);
   }, [currentIndex, gestures.length]);
