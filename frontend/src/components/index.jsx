@@ -1,4 +1,4 @@
-export * from "./barChart.jsx";
+ export * from "./barChart.jsx";
 export * from "./cameraGesture.jsx";
 export * from "./cameraIdentification.jsx";
 export * from "./flexSensor.jsx";
@@ -7,3 +7,4 @@ export * from "./gyroscope.jsx";
 export * from "./speaker.jsx";
 export * from "./ultrasonic.jsx";
 export * from "./pieChart.jsx";
+export * from "./message.jsx";

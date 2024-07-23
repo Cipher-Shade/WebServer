@@ -17,3 +17,16 @@ export const createFlexSensor = async (req, res) => {
     res.status(400).json({ message: err.message });
   }
 };
+
+export const getLatestFlexSensorData = async (req, res) => {
+  try {
+    const latestData = await FlexSensor.findOne().sort({ timestamp: -1 });
+    if (latestData) {
+      res.json(latestData);
+    } else {
+      res.status(404).json({ message: 'No data found' });
+    }
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};

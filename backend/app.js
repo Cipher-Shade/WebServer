@@ -4,6 +4,8 @@ import cors from 'cors';
 import gyroRouter from './routes/gyro.js'; 
 import ultrasonicRouter from './routes/ultrasonic.js';
 import flexRouter from './routes/flex.js';
+import handRouter from './routes/hand.js';
+import messageRouter from './routes/message.js';
 
 const app = express();
 
@@ -16,5 +18,7 @@ app.use(cookieParser());
 app.use('/api/v1', gyroRouter);
 app.use('/api/v1', ultrasonicRouter);
 app.use('/api/v1', flexRouter);
+app.use('/api/v1', handRouter);
+app.use('/api/v1', messageRouter);
 
 export default app;

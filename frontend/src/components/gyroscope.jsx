@@ -9,7 +9,7 @@ export const Gyroscope = () => {
     const fetchLatestGyroData = async () => {
       try {
         const { data } = await axios.get(
-          "http://192.168.100.68:4001/api/v1/gyrosensor/latest"
+          "http://192.168.100.68/api/v1/gyrosensor/latest"
         );
         if (data.accelerometer && data.gyroscope) {
           const roundedAccelerometer = {

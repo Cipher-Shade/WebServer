@@ -8,6 +8,7 @@ import {
   Gyroscope,
   Speaker,
   Ultrasonic,
+  Message
 } from "@/components";
 
 export const Sensors = () => {
@@ -27,9 +28,12 @@ export const Sensors = () => {
         <CamerIdentification />
         <FlexSensor />
         <Gyroscope />
-        <Speaker />
+        <Message />
+        {/* <Speaker /> */}
         <Ultrasonic />
       </div>
+      {/* <div className="grid grid-flow-row grid-cols-1 gap-8">
+      </div> */}
     </main>
   );
 };
