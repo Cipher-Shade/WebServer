@@ -1,37 +1,44 @@
 import React, { useState, useEffect } from "react";
-import axios from 'axios';
+import Perfect from "@assets/1.png";
+import TooNear from "@assets/2.png";
+import TooFar from "@assets/3.png";
 
 export const Ultrasonic = () => {
-  const [distance, setDistance] = useState(0);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const gestures = [
+    { image: Perfect, text: "Person is in perfect positon" },
+    { image: TooNear, text: "Person distance is too near" },
+    { image: TooFar, text: "Person distance is too far" },
+  ];
 
   useEffect(() => {
-    const fetchLatestDistanceData = async () => {
-      try {
-        const { data } = await axios.get('http://192.168.100.68:4001/api/v1/ultrasonicsensor/latest');
-        if (data.distance !== undefined) {
-          const roundedDistance = +data.distance.toFixed(2);
-          setDistance(roundedDistance);
-        } else {
-          console.error('Unexpected data structure:', data);
-        }
-      } catch (error) {
-        console.error('Error fetching latest distance data:', error);
-      }
+    const toggleGesture = () => {
+      const randomIndex = Math.floor(Math.random() * gestures.length);
+      setCurrentIndex(randomIndex);
     };
 
-    fetchLatestDistanceData();
-    const interval = setInterval(fetchLatestDistanceData, 3000);
+    const randomInterval = Math.floor(Math.random() * 5000) + 1000;
+    const timer = setTimeout(toggleGesture, randomInterval);
 
-    return () => clearInterval(interval);
-  }, []);
+    return () => clearTimeout(timer);
+  }, [currentIndex, gestures.length]);
+
+  const { image, text } = gestures[currentIndex];
 
   return (
-    <div className="card bg-primary-variant w-96 shadow-xl border border-primary-default text-white item">
-      <div className="card-body items-center text-center item-center">
-        <h1 className="card-title text-2xl italic capitalize">Ultrasonic</h1>
-        <p className="font-semibold text-xl capitalize">
-          Distance: {distance} centimeters
-        </p>
+    <div className="min-w-full min-h-full border shadow-xl card bg-primary-variant border-primary-default">
+      <div className="grid items-center justify-center text-center card-body">
+        <h1 className="pb-10 text-6xl italic font-extrabold text-center capitalize">
+          Ultrasonic
+        </h1>
+        <section className="grid items-center justify-center">
+          <span className="flex items-center justify-center">
+            <img src={image} alt={text} />
+          </span>
+          <h1 className="pt-6 text-6xl italic font-semibold text-center capitalize">
+            {text}
+          </h1>
+        </section>
       </div>
     </div>
   );
