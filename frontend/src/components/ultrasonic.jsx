@@ -1,16 +1,42 @@
+/* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from "react";
-import Perfect from "@assets/1.png";
-import TooNear from "@assets/2.png";
-import TooFar from "@assets/3.png";
-import HandUndetectedImg from "@assets/10.png";
+import axios from 'axios';
+import Perfect from "@/assets/24.png";
+import TooNear from "@/assets/25.png";
+import TooFar from "@/assets/26.png";
+import HandUndetectedImg from "@/assets/10.png";
 
 export const Ultrasonic = () => {
-  const [data, setData] = useState({ image: '', text: ''});
+  // const [distance, setDistance] = useState(0);
+
+  // useEffect(() => {
+  //   const fetchLatestDistanceData = async () => {
+  //     try {
+  //       const { data } = await axios.get('https://raspi-server.onrender.com/api/v1/ultrasonicsensor/latest');
+  //       if (data.distance !== undefined) {
+  //         const roundedDistance = +data.distance.toFixed(2);
+  //         setDistance(roundedDistance);
+  //       } else {
+  //         console.error('Unexpected data structure:', data);
+  //       }
+  //     } catch (error) {
+  //       console.error('Error fetching latest distance data:', error);
+  //     }
+  //   };
+
+  //   fetchLatestDistanceData();
+  //   const interval = setInterval(fetchLatestDistanceData, 3000);
+
+  //   return () => clearInterval(interval);
+  // }, []);
+
+  const [data, setData] = useState({ image: HandUndetectedImg, text: 'No data available' });
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await fetch('https://raspi-server.onrender.com/api/v1/ultrasonicsensor/latest');
+
         const result = await response.json();
 
         if (!result || result.distance === undefined || result.distance === null) {
@@ -19,14 +45,15 @@ export const Ultrasonic = () => {
         }
 
         const distance = result.distance;
-        let newData = { image: '', text: '' };
+        const roundedDistance = +distance.toFixed(2);
+        let newData = { image: HandUndetectedImg, text: 'No data available' }; // Default fallback
 
         if (distance === 0 || (distance >= 1 && distance <= 29)) {
-          newData = { image: TooNear, text: 'Person distance is too near' };
-        } else if (distance >= 30 && distance <= 50) {
-          newData = { image: Perfect, text: 'Person is in perfect position' };
-        } else if (distance >= 51 && distance <= 100) {
-          newData = { image: TooFar, text: 'Person distance is too far' };
+          newData = { image: TooNear, text: `User distance is too near (${roundedDistance} cm)` };
+        } else if (distance >= 30 && distance <= 100) {
+          newData = { image: Perfect, text: `User is in perfect position (${roundedDistance} cm)` };
+        } else if (distance >= 101 && distance <= 500) {
+          newData = { image: TooFar, text: `User distance is too far (${roundedDistance} cm)` };
         }
 
         setData(newData);
@@ -37,27 +64,20 @@ export const Ultrasonic = () => {
     };
 
     fetchData();
-    const interval = setInterval(fetchData, 500); 
-
+    const interval = setInterval(fetchData, 500);
     return () => clearInterval(interval);
   }, []);
 
   const { image, text } = data;
 
   return (
-    <div className="min-w-full min-h-full border shadow-xl card bg-primary-variant border-primary-default">
-      <div className="grid items-center justify-center text-center card-body">
-        <h1 className="pb-10 text-6xl italic font-extrabold text-center capitalize">
-          Ultrasonic
-        </h1>
-        <section className="grid items-center justify-center">
-          <span className="flex items-center justify-center">
-            <img src={image} alt={text} />
-          </span>
-          <h1 className="pt-6 text-6xl italic font-semibold text-center capitalize">
-            {text}
-          </h1>
-        </section>
+    <div className="card bg-primary-variant w-96 shadow-xl border border-primary-default text-white item">
+      <div className="card-body items-center text-center item-center">
+        <h1 className="card-title text-2xl italic capitalize">User Distance (delay: 7s)</h1>
+        <img src={image} alt="No Hand Detected" style={{ width: '180px', height: '180px' }} />
+        <p className="font-semibold text-xl">
+          {text}
+        </p>
       </div>
     </div>
   );

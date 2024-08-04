@@ -1,39 +1,42 @@
+/* eslint-disable no-unused-vars */
 import React from "react";
 import { FaArrowLeft } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import {
   CameraGesture,
-  CameraIdentification,
+  CamerIdentification,
   FlexSensor,
   Gyroscope,
   Speaker,
   Ultrasonic,
-  Message,
+  Message
 } from "@/components";
 
 export const Sensors = () => {
   const navigate = useNavigate();
 
   return (
-    <main className="flex flex-col items-center min-h-screen">
-      <button
-        className="flex items-center self-start px-6 pt-4 pb-12 text-2xl text-primary-default"
-        onClick={() => navigate(-1)}
-      >
-        <FaArrowLeft className="mr-3" />
-        Go Back
-      </button>
-      <div className="grid grid-flow-row grid-cols-2 px-12 pb-12 gap-x-24 gap-y-12">
-        <CameraGesture />
-        <CameraIdentification />
-        <FlexSensor />
-        <Gyroscope />
-        {/* <Message /> */}
-        <Speaker />
+<main className="flex flex-col items-center justify-start min-h-screen gap-y-8">
+  <button
+    className="flex items-center self-start px-6 pt-4 text-2xl text-primary-default"
+    onClick={() => navigate(-1)}
+  >
+    <FaArrowLeft className="mr-3" />
+    Go Back
+  </button>
+  <div className="grid grid-cols-3 gap-4">
+    <CameraGesture />
+    <FlexSensor />
+    <Gyroscope />
+    <div className="col-span-3 flex justify-center">
+      <div className="flex gap-4">
+        <Message />
         <Ultrasonic />
       </div>
-      {/* <div className="grid grid-flow-row grid-cols-1 gap-8">
-      </div> */}
-    </main>
+    </div>
+  </div>
+</main>
+
+
   );
 };

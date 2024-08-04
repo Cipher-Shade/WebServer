@@ -1,42 +1,65 @@
-import React, { useState, useEffect } from "react";
-import HandDetectedImg from "@assets/11.png";
-import HandUndetectedImg from "@assets/13.png";
+/* eslint-disable no-unused-vars */
+import React, { useState, useEffect, useRef } from "react";
+import axios from "axios";
+import HandDetectedImg from "@assets/17.png";
+import HandUndetectedImg from "@assets/18.png";
+import handDetectedSound from '../assets/HandDetected.mp3'
 
 export const CameraGesture = () => {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const gestures = [
-    { image: HandDetectedImg, text: "Hands Detected" },
-    { image: HandUndetectedImg, text: "Hands Undetected" },
-  ];
+  const [isOn, setIsOn] = useState(true);
+  const [handDetected, setHandDetected] = useState(false);
+  const [soundEnabled, setSoundEnabled] = useState(false);
+  const audioRef = useRef(null);
 
   useEffect(() => {
-    const toggleGesture = () => {
-      const randomIndex = Math.floor(Math.random() * gestures.length);
-      setCurrentIndex(randomIndex);
+    const interval = setInterval(() => {
+      setIsOn((prevIsOn) => !prevIsOn);
+    }, Math.floor(Math.random() * 2000) + 1000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    const fetchHandGestureData = async () => {
+      try {
+        const { data } = await axios.get(
+          "https://raspi-server.onrender.com/api/v1/hand/latest"
+        );
+        if (data.handDetected && !handDetected) {
+          audioRef.current.play();
+        }
+        setHandDetected(data.handDetected);
+      } catch (error) {
+        console.error("Error fetching hand gesture data:", error);
+      }
     };
 
-    const randomInterval = Math.floor(Math.random() * 5000) + 1000;
-    const timer = setTimeout(toggleGesture, randomInterval);
+    fetchHandGestureData();
+    const interval = setInterval(fetchHandGestureData, 6000);
 
-    return () => clearTimeout(timer);
-  }, [currentIndex, gestures.length]);
-
-  const { image, text } = gestures[currentIndex];
+    return () => clearInterval(interval);
+  }, []);
 
   return (
-    <div className="min-w-full min-h-full border shadow-xl card bg-primary-variant border-primary-default">
-      <div className="grid items-center justify-center text-center card-body">
-        <h1 className="pb-10 text-6xl italic font-extrabold text-center capitalize">
-          Camera Gesture
+    <div className="card bg-primary-variant w-96 shadow-xl border border-primary-default text-white item">
+      <div className="card-body items-center text-center">
+        <h1 className="card-title text-2xl italic capitalize">
+          Hand detection (delay: 5-10s)
         </h1>
-        <section className="grid items-center justify-center">
-          <span className="flex items-center justify-center">
-            <img src={image} alt={text} />
-          </span>
-          <h1 className="pt-6 text-6xl italic font-semibold text-center capitalize">
-            {text}
-          </h1>
-        </section>
+        {/* Conditionally display "Hand detected" */}
+        {handDetected ? (
+          <>
+            <img src={HandDetectedImg} alt="Hand Detected" style={{ width: '180px', height: '180px' }} />
+            <p className="font-semibold text-xl capitalize">Hand Detected</p>
+          </>
+        ) : (
+          <>
+            <img src={HandUndetectedImg} alt="No Hand Detected"  style={{ width: '180px', height: '180px' }} />
+            <p className="font-semibold text-xl capitalize">No hand detected</p>
+          </>
+        )}
+        {/* Button to enable sound */}
+        <audio ref={audioRef} src={handDetectedSound} />
       </div>
     </div>
   );
