@@ -12,7 +12,7 @@ export const Ultrasonic = () => {
   // useEffect(() => {
   //   const fetchLatestDistanceData = async () => {
   //     try {
-  //       const { data } = await axios.get('https://raspi-server.onrender.com/api/v1/ultrasonicsensor/latest');
+  //       const { data } = await axios.get('https://raspi-server-1.onrender.com/api/v1/ultrasonicsensor/latest');
   //       if (data.distance !== undefined) {
   //         const roundedDistance = +data.distance.toFixed(2);
   //         setDistance(roundedDistance);
@@ -35,7 +35,7 @@ export const Ultrasonic = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('https://raspi-server.onrender.com/api/v1/ultrasonicsensor/latest');
+        const response = await fetch('https://raspi-server-1.onrender.com/api/v1/ultrasonicsensor/latest');
 
         const result = await response.json();
 
@@ -50,9 +50,9 @@ export const Ultrasonic = () => {
 
         if (distance === 0 || (distance >= 1 && distance <= 29)) {
           newData = { image: TooNear, text: `User distance is too near (${roundedDistance} cm)` };
-        } else if (distance >= 30 && distance <= 100) {
+        } else if (distance >= 30 && distance <= 150) {
           newData = { image: Perfect, text: `User is in perfect position (${roundedDistance} cm)` };
-        } else if (distance >= 101 && distance <= 500) {
+        } else if (distance >= 151 && distance <= 400) {
           newData = { image: TooFar, text: `User distance is too far (${roundedDistance} cm)` };
         }
 
@@ -64,7 +64,7 @@ export const Ultrasonic = () => {
     };
 
     fetchData();
-    const interval = setInterval(fetchData, 500);
+    const interval = setInterval(fetchData, 2000);
     return () => clearInterval(interval);
   }, []);
 

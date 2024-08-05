@@ -6,6 +6,9 @@ import Like from "@/assets/19.png";
 import ILoveYou from "@/assets/21.png";
 import Hello from "@/assets/23.png";
 import No from "@/assets/22.png";
+import IlySound from '../assets/ily.mp3'
+import LikeSound from '../assets/like.mp3'
+import OkSound from '../assets/ok.mp3'
 
 export const Message = () => {
   const gestures = [
@@ -28,23 +31,28 @@ export const Message = () => {
   const [message, setMessage] = useState('Place hand in front of camera');
   const [prevAccelX, setPrevAccelX] = useState(0);
   const [handDetected, setHandDetected] = useState(false);
+  const [audioPlayed, setAudioPlayed] = useState({
+    ily: false,
+    like: false,
+    ok: false
+  });
 
   useEffect(() => {
     const fetchLatestSensorData = async () => {
       try {
         const { data } = await axios.get(
-          "https://raspi-server.onrender.com/api/v1/hand/latest"
+          "https://raspi-server-1.onrender.com/api/v1/hand/latest"
         );
         if (data.handDetected) {
           setHandEverDetected(true);
         }
 
-        const distanceResponse = await axios.get('https://raspi-server.onrender.com/api/v1/ultrasonicsensor/latest');
+        const distanceResponse = await axios.get('https://raspi-server-1.onrender.com/api/v1/ultrasonicsensor/latest');
         if (distanceResponse.data) {
           setDistance(distanceResponse.data.distance);
         }
 
-        const flexResponse = await axios.get('https://raspi-server.onrender.com/api/v1/flexsensor/latest');
+        const flexResponse = await axios.get('https://raspi-server-1.onrender.com/api/v1/flexsensor/latest');
         if (flexResponse.data) {
           setFlexData({
             flex1: flexResponse.data.flex1,
@@ -55,7 +63,7 @@ export const Message = () => {
           });
         }
 
-        const gyroResponse = await axios.get("https://raspi-server.onrender.com/api/v1/gyrosensor/latest");
+        const gyroResponse = await axios.get("https://raspi-server-1.onrender.com/api/v1/gyrosensor/latest");
         if (gyroResponse.data.accelerometer && gyroResponse.data.gyroscope) {
           setAcceleration({
             x: +gyroResponse.data.accelerometer.x.toFixed(2),
@@ -76,14 +84,31 @@ export const Message = () => {
         const pin3AndPin4Bent = flexData.flex3 && flexData.flex4;
         const pin1345Bent = flexData.flex1 && flexData.flex3 && flexData.flex4 && flexData.flex5;
 
+        
+
         if (allExceptPin1Bent) {
-          newMessage = 'Like';
+          newMessage = 'Approve';
+          if (!audioPlayed.like) {
+            const likeAudio = new Audio(LikeSound);
+            likeAudio.play();
+            setAudioPlayed(prevState => ({ ...prevState, like: true }));
+          }
         } else if (allExceptPin345Bent) {
           newMessage = 'Okay';
+          if (!audioPlayed.ok) {
+            const okAudio = new Audio(OkSound);
+            okAudio.play();
+            setAudioPlayed(prevState => ({ ...prevState, ok: true }));
+          }
         }
 
         if (pin3AndPin4Bent && gyroSaysILoveYou) {
           newMessage = 'I Love You';
+          if (!audioPlayed.ily) {
+            const ilyAudio = new Audio(IlySound);
+            ilyAudio.play();
+            setAudioPlayed(prevState => ({ ...prevState, ily: true }));
+          }
         }
 
         if (pin1345Bent && gyroSaysNo) {
@@ -100,7 +125,7 @@ export const Message = () => {
     };
 
     fetchLatestSensorData();
-    const interval = setInterval(fetchLatestSensorData, 3000);
+    const interval = setInterval(fetchLatestSensorData, 2000);
 
     return () => clearInterval(interval); // Cleanup on component unmount
   }, [flexData, acceleration, prevAccelX]);

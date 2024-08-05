@@ -4,7 +4,6 @@ import { FaArrowLeft } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import {
   CameraGesture,
-  CamerIdentification,
   FlexSensor,
   Gyroscope,
   Speaker,

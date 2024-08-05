@@ -9,6 +9,7 @@ export const CameraGesture = () => {
   const [isOn, setIsOn] = useState(true);
   const [handDetected, setHandDetected] = useState(false);
   const [soundEnabled, setSoundEnabled] = useState(false);
+  const [soundPlayed, setSoundPlayed] = useState(false);
   const audioRef = useRef(null);
 
   useEffect(() => {
@@ -23,10 +24,11 @@ export const CameraGesture = () => {
     const fetchHandGestureData = async () => {
       try {
         const { data } = await axios.get(
-          "https://raspi-server.onrender.com/api/v1/hand/latest"
+          "https://raspi-server-1.onrender.com/api/v1/hand/latest"
         );
-        if (data.handDetected && !handDetected) {
+        if (data.handDetected && !handDetected && !soundPlayed) {
           audioRef.current.play();
+          setSoundPlayed(true);
         }
         setHandDetected(data.handDetected);
       } catch (error) {
